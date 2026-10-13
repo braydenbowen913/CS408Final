@@ -41,7 +41,7 @@ Create an **Ubuntu 24.04 LTS** instance with the default `ubuntu` login. Allow
 inbound TCP **80** for visitors and **22** from your IP for SSH in its security
 group. Puma binds to loopback; port 3000 does not need an inbound rule.
 
-From your laptop:
+From your computer:
 
 ```bash
 chmod 600 ~/keys/mykey.pem
@@ -58,7 +58,7 @@ The app first starts when you deploy its code; nginx may return 502 beforehand.
 
 ## Deploy each update
 
-Your laptop needs the local runtime prerequisites above plus OpenSSH, rsync,
+Your computer needs the local runtime prerequisites above plus OpenSSH, rsync,
 and curl (`sudo apt-get install -y openssh-client rsync curl` on Ubuntu).
 
 ```bash
@@ -73,10 +73,6 @@ The ubuntu account needs sudo access, as provided by the standard EC2 image.
 If you change nginx or the service file, copy `deploy/` again and rerun setup
 before deploying.
 
-Open **http://<PUBLIC-IP>/** and submit that URL for the live-site requirement.
-Deployment requires your own running EC2 instance and key; adding these files
-to GitHub alone does not publish the site.
-
 ```bash
 # On the server: diagnose startup or verify boot behavior
 sudo systemctl status nexus nginx
@@ -84,7 +80,3 @@ sudo journalctl -u nexus -n 50 --no-pager
 sudo systemctl is-enabled nexus
 # After an EC2 reboot, check the public page and /api/health again.
 ```
-
-The deployment layout follows the course
-[simple-full-stack example](https://github.com/shanep/simple-full-stack/tree/main),
-adapted to Rails. See also the [Rails guide](https://guides.rubyonrails.org/v7.2/getting_started.html).
