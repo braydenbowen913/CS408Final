@@ -1,0 +1,24 @@
+[Unit]
+Description=Nexus Rails landing page
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/opt/nexus
+Environment=RAILS_ENV=production
+Environment=BIND=127.0.0.1
+Environment=PORT=3000
+Environment=BUNDLE_PATH=/opt/nexus/vendor/bundle
+EnvironmentFile=/etc/nexus.env
+ExecStart=/usr/bin/bundle exec puma -C config/puma.rb
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+NoNewPrivileges=true
+PrivateTmp=true
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target

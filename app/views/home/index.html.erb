@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Nexus — a simple Hello World landing page.">
+    <title>Hello World | Nexus</title>
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 0; background: #f5f2eb; color: #242b26; font-family: system-ui, sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+      header, footer { padding: 28px clamp(24px, 6vw, 88px); }
+      header { font-weight: 750; letter-spacing: .12em; font-size: 14px; }
+      main { flex: 1; display: grid; place-content: center; padding: 60px 24px; text-align: center; }
+      .eyebrow { color: #526b59; text-transform: uppercase; font-size: 12px; letter-spacing: .2em; }
+      h1 { font-size: clamp(56px, 10vw, 128px); letter-spacing: -.075em; line-height: 1.05; margin: 20px 0 28px; font-weight: 600; }
+      .intro { color: #626960; font-size: 18px; line-height: 1.7; max-width: 420px; margin: 0 auto; }
+      .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #526b59; margin-right: 8px; }
+      footer { border-top: 1px solid #deded3; color: #626960; font-size: 12px; display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; }
+    </style>
+  </head>
+  <body>
+    <header>NEXUS</header>
+    <main>
+      <p class="eyebrow">A small beginning</p>
+      <h1>Hello World</h1>
+      <p class="intro">Welcome to Nexus.<br>Every great idea starts somewhere.</p>
+    </main>
+    <footer><span><span class="dot" aria-hidden="true"></span>Built with Ruby on Rails</span><span>CS408 · Hello World</span></footer>
+  </body>
+</html>

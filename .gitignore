@@ -149,3 +149,10 @@ service-account*.json
 *.credentials.json
 .netrc
 .npmrc
+
+# Rails dependencies and runtime files
+.bundle/
+vendor/bundle/
+log/
+tmp/
+storage/
