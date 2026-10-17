@@ -1,82 +1,62 @@
-# CS408Final
-# Nexus
+# Nexus — Checkpoint 1
 
-A single **Hello World** landing page built with Ruby on Rails 7.2 and Puma.
-`GET /` serves the page; `GET /api/health` returns HTTP 200 with `{"status":"ok"}`.
-No database, Node.js, JavaScript build, migrations, or sample data are needed.
+Ruby on Rails 7.2 personal productivity workspace for CS408. This checkpoint includes PostgreSQL persistence, Bootstrap styling, a shared header/footer and navigation, account registration, login/logout, and a private basic dashboard. Notes, fitness, finances, goals, search, and uploads belong to later checkpoints and are not implemented.
 
-## Run from a fresh clone
+## Start from a fresh clone
 
-Use Linux with Bash, Ruby **3.2–3.x**, Bundler **2.5.22**, a C/C++ compiler, Make,
-pkg-config, and OpenSSL, libyaml, and zlib development headers. Internet access
-to RubyGems is needed for dependency installation. Ubuntu 24.04 is recommended:
+Supported automated environment: **Ubuntu 24.04 LTS**, including Ubuntu 24.04 in WSL. Use a normal user with sudo access and internet access to Ubuntu packages and RubyGems:
 
 ```bash
-sudo apt-get update
-sudo apt-get install -y ruby-full ruby-dev ruby-bundler build-essential pkg-config libssl-dev libyaml-dev zlib1g-dev ca-certificates
-sudo gem install bundler --version 2.5.22 --no-document
 git clone <YOUR-REPOSITORY-URL>
 cd CS408Final
+chmod +x start.sh
 ./start.sh
 ```
 
-Open **http://localhost:3000**. Stop with Ctrl+C. Run `./start.sh` again whenever
-needed: it checks prerequisites, installs dependencies into `vendor/bundle`,
-creates runtime directories, and starts Rails. Override the port with
-`PORT=3001 ./start.sh`. These Bash scripts should be run in Linux/WSL on Windows.
+The script installs Ruby, Bundler 2.5.22, PostgreSQL, and build dependencies; starts PostgreSQL; creates a local database role matching your login using peer authentication; installs gems; prepares the development database; and starts Rails at **http://localhost:3000**. Repeated runs preserve accounts. Stop Rails with Ctrl+C. Use `PORT=3001 ./start.sh` to change the port.
 
-## Tests
+Bootstrap 5.3.3 is loaded from jsDelivr with an integrity check; browser internet access is required for Bootstrap styles. Forms and navigation use ordinary server-rendered HTML and require no JavaScript build.
 
-After installing dependencies with `start.sh`, run:
+Register at `/signup` with a username, email, and matching password of 12–72 characters. Registration opens `/dashboard`. Log out in the header, then log back in at `/login`. Only signed-in users can access the dashboard, which displays their own account details. Passwords use bcrypt hashes; sessions reset on login/logout and Rails protects forms against CSRF.
+
+## Manual setup and tests
+
+Ruby **3.2 through 4.0**, PostgreSQL 16, and the dependencies installed by `start.sh` are required. If running Rails directly after using the script, set your local peer connection:
 
 ```bash
+export PGUSER="$(id -un)"
+export PGHOST=/var/run/postgresql
+bundle exec rails db:create db:prepare
+RAILS_ENV=test bundle exec rails db:create db:prepare
 bundle exec rails test
+bundle exec rails zeitwerk:check
+bash -n start.sh deploy/setup-ec2.sh deploy/deploy.sh
 ```
 
-The integration tests check the landing page and JSON health endpoint.
+The suite tests account validation, password hashing, normalized/unique email, registration, invalid credentials, login/logout, private dashboard access, account isolation, CSRF, navigation, and health JSON. GitHub Actions runs these checks against PostgreSQL 16. No sample accounts or default passwords are created.
 
-## Prepare EC2 once
+For an existing PostgreSQL server, use `PGHOST`, `PGPORT`, `PGUSER`, and `PGPASSWORD`, or `DATABASE_URL`. Development and test databases default to `nexus_development` and `nexus_test`; the local development role needs database creation permission for `db:prepare`. Use separate development and test databases. To use Windows directly, install compatible Ruby/PostgreSQL, set those environment variables, run `bundle install`, `bundle exec rails db:create db:prepare`, and `bundle exec rails server`.
 
-Create an **Ubuntu 24.04 LTS** instance with the default `ubuntu` login. Allow
-inbound TCP **80** for visitors and **22** from your IP for SSH in its security
-group. Puma binds to loopback; port 3000 does not need an inbound rule.
+## Server configuration script
 
-From your computer:
+The EC2 instance already exists. **No instance creation or live deployment is part of this checkpoint's implementation.** The repository includes scripts ready to use when server setup or deployment is requested.
+
+`deploy/setup-ec2.sh` supports Ubuntu 24.04 with the standard `ubuntu` user. It installs Ruby/Bundler, PostgreSQL, Git, Nginx and build dependencies; creates `/opt/nexus` and a local PostgreSQL production database owned by `ubuntu`; configures Nginx/Puma and systemd; and enables services at boot. PostgreSQL uses local peer authentication. Rails secrets are generated in root-readable `/etc/nexus.env` and preserved on repeat runs. The application first starts after code is deployed.
+
+When ready to configure the existing server:
 
 ```bash
-chmod 600 ~/keys/mykey.pem
 scp -i ~/keys/mykey.pem -r deploy ubuntu@<PUBLIC-IP>:~
 ssh -i ~/keys/mykey.pem ubuntu@<PUBLIC-IP>
 sudo bash deploy/setup-ec2.sh
-exit
 ```
 
-Setup installs Ruby and nginx, creates `/opt/nexus`, configures nginx to proxy
-port 80 to `127.0.0.1:3000`, and enables `nexus.service` on boot. It creates
-a root-readable secret in `/etc/nexus.env` and preserves it on repeated setup.
-The app first starts when you deploy its code; nginx may return 502 beforehand.
+The security group needs TCP 80 for web traffic and 22 from your IP for SSH. Puma binds to loopback, so port 3000 needs no public rule.
 
-## Deploy each update
-
-Your computer needs the local runtime prerequisites above plus OpenSSH, rsync,
-and curl (`sudo apt-get install -y openssh-client rsync curl` on Ubuntu).
+The existing `deploy/deploy.sh` helper requires Linux/WSL, local Ruby, PostgreSQL test access, OpenSSH, rsync and curl. It runs local tests, mirrors source (including deletion of remotely removed source files), installs server gems, prepares the production database, restarts Nexus, and checks `/api/health`:
 
 ```bash
 ./deploy/deploy.sh -h <PUBLIC-IP> -i ~/keys/mykey.pem
 ```
 
-The script installs local dependencies, runs tests, mirrors source into
-`/opt/nexus`, installs server dependencies, restarts Nexus, and retries
-`http://<PUBLIC-IP>/api/health`. It preserves server gems and runtime directories.
-Files removed locally are removed from the remote source directory by rsync.
-The ubuntu account needs sudo access, as provided by the standard EC2 image.
-If you change nginx or the service file, copy `deploy/` again and rerun setup
-before deploying.
-
-```bash
-# On the server: diagnose startup or verify boot behavior
-sudo systemctl status nexus nginx
-sudo journalctl -u nexus -n 50 --no-pager
-sudo systemctl is-enabled nexus
-# After an EC2 reboot, check the public page and /api/health again.
-```
+It preserves server gems, runtime files, and secrets. Do not run deployment until you intend to update the server. Live deployment, reboot verification, HTTPS, and other Checkpoint 6 work remain outside this implementation.

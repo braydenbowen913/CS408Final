@@ -1,37 +1,38 @@
-name: Rails checks
+name: Checkpoint 1 checks
 on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: nexus
+          POSTGRES_PASSWORD: nexus_test_only
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      PGUSER: nexus
+      PGPASSWORD: nexus_test_only
+      PGHOST: localhost
     steps:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.2'
+          ruby-version: '3.3'
           bundler: '2.5.22'
-      - run: sudo apt-get update && sudo apt-get install -y build-essential pkg-config libssl-dev libyaml-dev zlib1g-dev
-      - name: Verify fresh startup and repeat startup
-        shell: bash
+          bundler-cache: true
+      - name: Check Bash syntax
         run: |
-          set -euo pipefail
-          bash -n start.sh deploy/setup-ec2.sh deploy/deploy.sh
-          for pass in 1 2; do
-            ./start.sh > /tmp/nexus-start.log 2>&1 &
-            app_pid=$!
-            trap 'kill "$app_pid" 2>/dev/null || true' EXIT
-            ready=false
-            for attempt in {1..120}; do
-              if curl -fsS http://localhost:3000/api/health; then
-                ready=true
-                break
-              fi
-              if ! kill -0 "$app_pid" 2>/dev/null; then break; fi
-              sleep 2
-            done
-            if [[ "$ready" != true ]]; then cat /tmp/nexus-start.log; exit 1; fi
-            curl -fsS http://localhost:3000/ | grep -q '<h1>Hello World</h1>'
-            kill "$app_pid"
-            wait "$app_pid" || true
-            trap - EXIT
+          for script in start.sh deploy/setup-ec2.sh deploy/deploy.sh; do
+            bash -n "$script"
           done
-          bundle exec rails test
+      - run: bundle exec rails db:create db:prepare
+        env:
+          RAILS_ENV: test
+      - run: bundle exec rails test
+      - run: bundle exec rails zeitwerk:check

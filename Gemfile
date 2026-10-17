@@ -1,7 +1,8 @@
 source "https://rubygems.org"
-ruby ">= 3.2", "< 4.0"
+ruby ">= 3.2", "< 4.1"
 gem "rails", "~> 7.2.0"
 gem "puma", "~> 6.0"
-# RDoc 8 pulls in an RBS extension that fails on this project's Windows toolchain.
+gem "pg", "~> 1.5"
+gem "bcrypt", "~> 3.1"
 gem "rdoc", "~> 6.0"
 gem "tzinfo-data", platforms: [:windows, :jruby]

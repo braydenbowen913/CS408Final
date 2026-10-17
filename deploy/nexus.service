@@ -1,6 +1,7 @@
 [Unit]
-Description=Nexus Rails landing page
-After=network.target
+Description=Nexus personal workspace
+After=network.target postgresql.service
+Wants=postgresql.service
 
 [Service]
 Type=simple

@@ -26,6 +26,7 @@ TARGET="ubuntu@$HOST"
 echo "Installing local dependencies and running tests..."
 bundle config set --local path vendor/bundle
 bundle install
+RAILS_ENV=test bundle exec rails db:create db:prepare
 bundle exec rails test
 printf -v SSH_COMMAND '%q ' ssh "${SSH_OPTS[@]}"
 echo "Copying source to $TARGET:/opt/nexus..."
@@ -41,6 +42,8 @@ cd /opt/nexus
 bundle config set --local path vendor/bundle
 bundle install
 mkdir -p log tmp/pids
+# Load the root-readable service environment only for database preparation.
+sudo bash -c 'set -a; source /etc/nexus.env; set +a; export RAILS_ENV=production; cd /opt/nexus; exec runuser -u ubuntu --preserve-environment -- /usr/bin/bundle exec rails db:prepare'
 sudo systemctl restart nexus
 sudo systemctl is-active --quiet nexus
 REMOTE
