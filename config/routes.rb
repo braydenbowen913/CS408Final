@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  resources :notes
+  resources :folders, :categories, except: [:show, :new]
+  get "/search", to: "notes#search", as: :search
   root "home#index"
   get "/api/health", to: "home#health"
   get "/signup", to: "registrations#new", as: :signup

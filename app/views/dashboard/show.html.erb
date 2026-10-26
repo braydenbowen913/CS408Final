@@ -6,7 +6,8 @@
   <div class="row g-4 mt-3">
     <div class="col-lg-8"><div class="card h-100"><div class="card-body p-4">
       <h2 class="h4">You're all set</h2><p>Your account is ready. This dashboard will bring your personal tools together as Nexus grows.</p>
-      <p class="text-secondary mb-0">Notes, workout tracking, finances, and goals will arrive in future updates.</p>
+      <p class="text-secondary mb-0">Your notes workspace is ready. Workout tracking, finances, and goals will arrive in future updates.</p>
+      <%= link_to "Open notes", notes_path, class: "btn btn-primary mt-3" %>
     </div></div></div>
     <div class="col-lg-4"><div class="card h-100"><div class="card-body p-4">
       <h2 class="h5">Your account</h2><dl class="mb-0"><dt>Username</dt><dd><%= current_user.username %></dd><dt>Email</dt><dd class="text-break"><%= current_user.email %></dd><dt>Member since</dt><dd><%= current_user.created_at.strftime("%B %Y") %></dd></dl>

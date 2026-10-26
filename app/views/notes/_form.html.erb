@@ -1,0 +1,17 @@
+<%= render "shared/form_errors", record: @note %>
+<%= form_with model: @note, local: true do |form| %>
+  <div class="mb-3">
+    <%= form.label :title, class: "form-label" %>
+    <%= form.text_field :title, required: true, maxlength: 200, class: "form-control" %>
+  </div>
+  <div class="row">
+    <div class="col-md-6 mb-3"><%= form.label :folder_id, "Folder", class: "form-label" %><%= form.collection_select :folder_id, @folders, :id, :name, { include_blank: "No folder" }, class: "form-select" %></div>
+    <div class="col-md-6 mb-3"><%= form.label :category_id, "Category", class: "form-label" %><%= form.collection_select :category_id, @categories, :id, :name, { include_blank: "No category" }, class: "form-select" %></div>
+  </div>
+  <div class="mb-3">
+    <%= form.label :content, class: "form-label" %>
+    <%= form.text_area :content, rows: 18, maxlength: 100000, class: "form-control", aria: { describedby: "editor-help" } %>
+    <div id="editor-help" class="form-text">Plain text. Save your changes before leaving this page.</div>
+  </div>
+  <div class="d-flex gap-3 align-items-center"><%= form.submit "Save note", class: "btn btn-primary" %><%= link_to "Cancel", @note.persisted? ? note_path(@note) : notes_path, class: "btn btn-outline-secondary" %></div>
+<% end %>

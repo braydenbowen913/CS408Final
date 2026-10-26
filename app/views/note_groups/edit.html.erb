@@ -1,0 +1,3 @@
+<% content_for :title, "Rename #{@label.downcase}" %>
+<h1 class="mb-4">Rename <%= @label.downcase %></h1>
+<div class="card auth-card"><div class="card-body p-4"><%= render "note_groups/form" %><%= link_to "Cancel", @index_path, class: "d-inline-block mt-3" %></div></div>

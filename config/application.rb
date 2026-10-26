@@ -9,7 +9,7 @@ Bundler.require(*Rails.groups)
 module Nexus
   class Application < Rails::Application
     config.load_defaults 7.2
-    config.filter_parameters += [:password, :password_confirmation]
+    config.filter_parameters += [:password, :password_confirmation, :title, :content, :name, :q]
     config.eager_load = ENV["RAILS_ENV"] == "production"
     config.secret_key_base = ENV.fetch("SECRET_KEY_BASE") {
       raise "SECRET_KEY_BASE is required in production" if ENV["RAILS_ENV"] == "production"

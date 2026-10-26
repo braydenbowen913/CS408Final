@@ -1,6 +1,6 @@
-# Nexus — Checkpoint 1
+# Nexus — Checkpoint 2
 
-Ruby on Rails 7.2 personal productivity workspace for CS408. This checkpoint includes PostgreSQL persistence, Bootstrap styling, a shared header/footer and navigation, account registration, login/logout, and a private basic dashboard. Notes, fitness, finances, goals, search, and uploads belong to later checkpoints and are not implemented.
+Ruby on Rails 7.2 personal productivity workspace for CS408. Checkpoint 2 adds private notes with create/edit/delete forms, a plain-text editor, folders, categories, and title/content search to the PostgreSQL and Bootstrap foundation. Fitness, finances, goals, global workspace search, and uploads belong to later checkpoints.
 
 ## Start from a fresh clone
 
@@ -19,6 +19,25 @@ Bootstrap 5.3.3 is loaded from jsDelivr with an integrity check; browser interne
 
 Register at `/signup` with a username, email, and matching password of 12–72 characters. Registration opens `/dashboard`. Log out in the header, then log back in at `/login`. Only signed-in users can access the dashboard, which displays their own account details. Passwords use bcrypt hashes; sessions reset on login/logout and Rails protects forms against CSRF.
 
+## Notes and search (Checkpoint 2)
+
+After logging in, choose **Notes** in the header or **Open notes** on the dashboard:
+
+- `/notes`: browse your notes, newest updated first, with folder/category filters and 20 notes per page.
+- `/notes/new`: create a note with a required title, optional text, and optional folder and category.
+- `/notes/:id`: read a note, open its editor, or expand the delete section to permanently remove it.
+- `/notes/:id/edit`: edit and explicitly save; there is no autosave or rich-text/HTML editor.
+- `/folders` and `/categories`: create and rename your flat organization lists. Deleting either keeps its notes and clears only that assignment.
+- `/search`: case-insensitive title/content search, optionally combined with folder and category filters. A blank query lists all your notes; `%` and `_` are treated literally. This searches notes only.
+
+Every notes, folder, category, and search route requires login. Lookups and results are scoped to the signed-in account, and notes cannot be assigned another user's folder or category. User-supplied text is escaped when rendered; note text and search terms are filtered from Rails parameter logs.
+
+For an existing installation, install dependencies and run `bundle exec rails db:prepare` before restarting Rails. The new migration adds folders, categories, and notes without modifying existing accounts. `start.sh` and `deploy/deploy.sh` already prepare the database automatically. To deploy manually on EC2, upload the updated source and run the production database preparation command with `/etc/nexus.env` loaded, then `sudo systemctl restart nexus`.
+
+The Checkpoint 2 tests cover note CRUD, invalid forms and retained drafts, owner-only access, forged assignments, HTML escaping, folder/category management, note preservation on group deletion, search/filter combinations, literal wildcards, and pagination.
+
+Verification on this Windows machine is limited: Windows Application Control blocks Ruby's `strscan.so`, preventing Rails boot, migrations, and the automated suite from executing. Ruby and Rails ERB syntax checks can run separately. Run the complete suite in the supported Ubuntu environment or GitHub Actions before deployment; do not treat the new tests as passed until that run succeeds.
+
 ## Manual setup and tests
 
 Ruby **3.2 through 4.0**, PostgreSQL 16, and the dependencies installed by `start.sh` are required. If running Rails directly after using the script, set your local peer connection:
@@ -30,7 +49,7 @@ bundle exec rails db:create db:prepare
 RAILS_ENV=test bundle exec rails db:create db:prepare
 bundle exec rails test
 bundle exec rails zeitwerk:check
-bash -n start.sh deploy/setup-ec2.sh deploy/deploy.sh
+for script in start.sh deploy/setup-ec2.sh deploy/deploy.sh; do bash -n "$script"; done
 ```
 
 The suite tests account validation, password hashing, normalized/unique email, registration, invalid credentials, login/logout, private dashboard access, account isolation, CSRF, navigation, and health JSON. GitHub Actions runs these checks against PostgreSQL 16. No sample accounts or default passwords are created.

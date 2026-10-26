@@ -1,0 +1,2 @@
+class FoldersController < NoteGroupsController
+end

@@ -1,0 +1,52 @@
+<% content_for :title, @search_page ? "Search notes" : "Notes" %>
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+  <div><p class="eyebrow">Your workspace</p><h1><%= @search_page ? "Search notes" : "Notes" %></h1><p class="text-secondary mb-0">Keep ideas, plans, and everyday details in one place.</p></div>
+  <%= link_to "New note", new_note_path, class: "btn btn-primary" %>
+</div>
+<div class="row g-4">
+  <aside class="col-lg-3">
+    <nav class="card" aria-label="Notes navigation"><div class="card-body">
+      <%= link_to "All notes", notes_path, class: "d-block mb-3" %>
+      <%= link_to "Search notes", search_path, class: "d-block mb-3" %>
+      <div class="d-flex justify-content-between gap-2"><h2 class="h6">Folders</h2><%= link_to "Manage folders", folders_path, class: "small" %></div>
+      <ul class="list-unstyled mb-4"><% @folders.each do |folder| %><li class="my-2 text-break"><%= link_to folder.name, notes_path(folder_id: folder.id) %></li><% end %></ul>
+      <div class="d-flex justify-content-between gap-2"><h2 class="h6">Categories</h2><%= link_to "Manage categories", categories_path, class: "small" %></div>
+      <ul class="list-unstyled mb-0"><% @categories.each do |category| %><li class="my-2 text-break"><%= link_to category.name, notes_path(category_id: category.id) %></li><% end %></ul>
+    </div></nav>
+  </aside>
+  <section class="col-lg-9" aria-label="Notes list">
+    <div class="card mb-4"><div class="card-body">
+      <%= form_with url: @search_page ? search_path : notes_path, method: :get, local: true do |form| %>
+        <div class="mb-3"><%= form.label :q, "Search title or content", class: "form-label" %><%= form.search_field :q, value: @query, class: "form-control", placeholder: "What are you looking for?" %></div>
+        <div class="row g-3 align-items-end">
+          <div class="col-md-4"><%= form.label :folder_id, "Folder", class: "form-label" %><%= form.collection_select :folder_id, @folders, :id, :name, { include_blank: "All folders", selected: @folder&.id }, class: "form-select" %></div>
+          <div class="col-md-4"><%= form.label :category_id, "Category", class: "form-label" %><%= form.collection_select :category_id, @categories, :id, :name, { include_blank: "All categories", selected: @category&.id }, class: "form-select" %></div>
+          <div class="col-md-4 d-flex gap-2"><%= form.submit "Search", class: "btn btn-primary" %><%= link_to "Clear", @search_page ? search_path : notes_path, class: "btn btn-outline-secondary" %></div>
+        </div>
+      <% end %>
+    </div></div>
+    <p class="text-secondary" role="status"><%= pluralize(@total, "note") %><%= " matching your search" if @query.present? %></p>
+    <% if @notes.empty? %>
+      <div class="card"><div class="card-body p-4"><h2 class="h5">No notes found</h2><p class="mb-0">Create your first note, or clear your search and filters to see more.</p></div></div>
+    <% else %>
+      <% @notes.each do |note| %>
+        <article class="card mb-3"><div class="card-body p-4">
+          <h2 class="h5 text-break"><%= link_to note.title, note %></h2>
+          <p class="text-secondary text-break"><%= truncate(note.content, length: 180) %></p>
+          <div class="d-flex flex-wrap gap-2 small text-secondary">
+            <% if note.folder %><span class="badge text-bg-light"><%= note.folder.name %></span><% end %>
+            <% if note.category %><span class="badge text-bg-light"><%= note.category.name %></span><% end %>
+            <span>Updated <%= note.updated_at.strftime("%b %d, %Y") %></span>
+          </div>
+        </div></article>
+      <% end %>
+    <% end %>
+    <% if @page > 1 || @page * 20 < @total %>
+      <nav aria-label="Notes pages" class="d-flex gap-3 mt-4">
+        <% if @page > 1 %><%= link_to "Previous", url_for(q: @query, folder_id: @folder&.id, category_id: @category&.id, page: @page - 1), class: "btn btn-outline-secondary" %><% end %>
+        <span class="align-self-center">Page <%= @page %></span>
+        <% if @page * 20 < @total %><%= link_to "Next", url_for(q: @query, folder_id: @folder&.id, category_id: @category&.id, page: @page + 1), class: "btn btn-outline-secondary" %><% end %>
+      </nav>
+    <% end %>
+  </section>
+</div>

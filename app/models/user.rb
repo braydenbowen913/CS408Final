@@ -1,4 +1,8 @@
 class User < ApplicationRecord
+  has_many :notes, dependent: :destroy
+  has_many :folders, dependent: :destroy
+  has_many :categories, dependent: :destroy
+
   has_secure_password
   normalizes :email, with: ->(email) { email.strip.downcase }
   normalizes :username, with: ->(username) { username.strip }

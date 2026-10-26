@@ -1,0 +1,5 @@
+<%= render "shared/form_errors", record: @group %>
+<%= form_with model: @group, local: true do |form| %>
+  <div class="mb-3"><%= form.label :name, "#{@label} name", class: "form-label" %><%= form.text_field :name, required: true, maxlength: 80, class: "form-control" %></div>
+  <%= form.submit @group.persisted? ? "Save changes" : "Create #{@label.downcase}", class: "btn btn-primary" %>
+<% end %>

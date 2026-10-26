@@ -15,9 +15,9 @@
 <section aria-labelledby="workspace-heading">
   <h2 id="workspace-heading" class="h4 mb-4">One workspace, taking shape</h2>
   <div class="row g-3">
-    <% { "Notes" => "A future home for your ideas and knowledge.", "Fitness" => "Workout tracking and progress, coming in a later update.", "Finances" => "Personal accounts and spending, planned for a future update.", "Goals" => "A place for measurable ambitions, coming soon." }.each do |name, description| %>
+    <% { "Notes" => "Write, organize, and search your private notes.", "Fitness" => "Workout tracking and progress, coming in a later update.", "Finances" => "Personal accounts and spending, planned for a future update.", "Goals" => "A place for measurable ambitions, coming soon." }.each do |name, description| %>
       <div class="col-md-6 col-xl-3"><div class="card h-100"><div class="card-body p-4">
-        <span class="badge text-bg-light mb-3">Planned</span><h3 class="h5"><%= name %></h3><p class="text-secondary mb-0"><%= description %></p>
+        <span class="badge text-bg-light mb-3"><%= name == "Notes" ? "Available" : "Planned" %></span><h3 class="h5"><%= name %></h3><p class="text-secondary mb-0"><%= description %></p>
       </div></div></div>
     <% end %>
   </div>
