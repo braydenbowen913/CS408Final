@@ -34,6 +34,7 @@ rsync -az --delete \
     --exclude='.git/' --exclude='.bundle/' --exclude='vendor/' \
     --exclude='log/' --exclude='tmp/' --exclude='storage/' \
     --exclude='.env*' --exclude='.aws/' --exclude='keys/' \
+    --exclude='.codex/' --exclude='.agents/' --exclude='ubuntu@*/' \
     --exclude='*.pem' --exclude='*.key' --exclude='secrets/' \
     -e "$SSH_COMMAND" ./ "$TARGET:/opt/nexus/"
 ssh "${SSH_OPTS[@]}" "$TARGET" 'bash -se' <<'REMOTE'

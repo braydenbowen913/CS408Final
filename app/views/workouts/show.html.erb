@@ -1,0 +1,7 @@
+<% content_for :title, @workout.name %>
+<h1><%= @workout.name %></h1>
+<p><time datetime="<%= @workout.workout_date.iso8601 %>"><%= @workout.workout_date %></time></p>
+<p style="white-space: pre-wrap"><%= @workout.notes %></p>
+<%= render "entries", entries: @workout.workout_exercises %>
+<div class="d-flex flex-wrap gap-3 mb-4"><%= link_to "Edit workout", edit_workout_path(@workout), class: "btn btn-primary" %><%= link_to "Workout history", workouts_path, class: "btn btn-outline-secondary" %></div>
+<details><summary class="btn btn-outline-danger">Delete workout</summary><p>This permanently deletes this workout and its recorded sets.</p><%= button_to "Permanently delete workout", workout_path(@workout), method: :delete, class: "btn btn-danger" %></details>

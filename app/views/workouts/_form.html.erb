@@ -1,0 +1,36 @@
+<%= form_with model: @workout do |form| %>
+  <%= render "shared/form_errors", record: @workout %>
+  <div class="row g-3 mb-3">
+    <div class="col-md-8"><%= form.label :name, class: "form-label" %><%= form.text_field :name, required: true, maxlength: 150, class: "form-control" %></div>
+    <div class="col-md-4"><%= form.label :workout_date, class: "form-label" %><%= form.date_field :workout_date, required: true, class: "form-control" %></div>
+  </div>
+  <div class="mb-4"><%= form.label :notes, class: "form-label" %><%= form.text_area :notes, rows: 3, maxlength: 20000, class: "form-control" %></div>
+  <p>Record weight in kilograms (kg); use 0 for bodyweight. Add rows as needed, then save the workout. Adding rows preserves your draft without saving it. Check Remove to delete an exercise or set when saving.</p>
+  <% if @exercises.empty? %><p role="status"><%= link_to "Create an exercise first", exercises_path %> so you can record it here.</p><% end %>
+  <%= form.fields_for :workout_exercises do |entry| %>
+    <fieldset class="card card-body mb-4">
+      <legend class="h5">Exercise <%= entry.index + 1 %></legend>
+      <%= render "shared/form_errors", record: entry.object %>
+      <div class="row g-3 mb-3">
+        <div class="col-md-8"><%= entry.label :exercise_id, "Exercise", class: "form-label" %><%= entry.collection_select :exercise_id, @exercises, :id, :name, { include_blank: "Choose exercise" }, class: "form-select" %></div>
+        <div class="col-md-4"><%= entry.label :exercise_order, "Order", class: "form-label" %><%= entry.number_field :exercise_order, min: 1, step: 1, class: "form-control" %></div>
+      </div>
+      <div class="form-check mb-3"><%= entry.check_box :_destroy, class: "form-check-input" %><%= entry.label :_destroy, "Remove exercise and its sets", class: "form-check-label" %></div>
+      <%= entry.fields_for :exercise_sets do |set| %>
+        <%= render "shared/form_errors", record: set.object %>
+        <div class="row g-2 mb-3 align-items-end">
+          <div class="col-4 col-md-2"><%= set.label :set_number, "Set", class: "form-label" %><%= set.number_field :set_number, min: 1, step: 1, class: "form-control" %></div>
+          <div class="col-4 col-md-3"><%= set.label :repetitions, "Reps", class: "form-label" %><%= set.number_field :repetitions, min: 1, max: 100000, step: 1, class: "form-control" %></div>
+          <div class="col-4 col-md-3"><%= set.label :weight, "Weight (kg)", class: "form-label" %><%= set.number_field :weight, min: 0, max: 99999999.99, step: 0.01, class: "form-control" %></div>
+          <div class="col-md-4"><div class="form-check"><%= set.check_box :_destroy, class: "form-check-input" %><%= set.label :_destroy, "Remove set", class: "form-check-label" %></div></div>
+        </div>
+      <% end %>
+      <div><%= button_tag "Add set", name: "add_set", value: entry.index, formnovalidate: true, class: "btn btn-outline-secondary" %></div>
+    </fieldset>
+  <% end %>
+  <div class="d-flex flex-wrap gap-2 mb-4">
+    <%= form.submit "Save workout", class: "btn btn-primary", disabled: @exercises.empty? %>
+    <%= button_tag "Add exercise", name: "add_exercise", value: "1", formnovalidate: true, class: "btn btn-outline-secondary" %>
+    <%= link_to "Cancel", workouts_path, class: "btn btn-outline-secondary" %>
+  </div>
+<% end %>

@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  has_many :workouts, dependent: :destroy
+  has_many :exercises, dependent: :destroy
   has_many :notes, dependent: :destroy
   has_many :folders, dependent: :destroy
   has_many :categories, dependent: :destroy

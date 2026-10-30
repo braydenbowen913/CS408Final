@@ -1,0 +1,10 @@
+<% entries.each do |entry| %>
+  <section class="mb-4">
+    <h3 class="h5"><%= entry.exercise.name %></h3>
+    <div class="table-responsive"><table class="table table-sm">
+      <caption>Recorded sets for <%= entry.exercise.name %></caption>
+      <thead><tr><th scope="col">Set</th><th scope="col">Reps</th><th scope="col">Weight (kg)</th></tr></thead>
+      <tbody><% entry.exercise_sets.each do |set| %><tr><td><%= set.set_number %></td><td><%= set.repetitions %></td><td><%= number_with_precision set.weight, precision: 2 %></td></tr><% end %></tbody>
+    </table></div>
+  </section>
+<% end %>

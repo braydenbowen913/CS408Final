@@ -1,0 +1,7 @@
+<%= form_with model: @exercise do |form| %>
+  <%= render "shared/form_errors", record: @exercise %>
+  <div class="mb-3"><%= form.label :name, class: "form-label" %><%= form.text_field :name, required: true, maxlength: 100, class: "form-control" %></div>
+  <div class="mb-3"><%= form.label :muscle_group, class: "form-label" %><%= form.text_field :muscle_group, maxlength: 100, class: "form-control" %></div>
+  <div class="mb-3"><%= form.label :description, class: "form-label" %><%= form.text_area :description, rows: 3, maxlength: 10000, class: "form-control" %></div>
+  <%= form.submit class: "btn btn-primary" %>
+<% end %>

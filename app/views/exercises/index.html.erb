@@ -1,0 +1,19 @@
+<% content_for :title, "Exercises" %>
+<div class="d-flex flex-wrap justify-content-between gap-3 mb-4"><h1>Exercises</h1><%= link_to "Workout history", workouts_path, class: "btn btn-outline-primary align-self-start" %></div>
+<div class="row g-4">
+  <section class="col-lg-5"><div class="card card-body"><h2 class="h4">Create exercise</h2><%= render "form" %></div></section>
+  <section class="col-lg-7"><h2 class="h4">Your exercises</h2>
+    <% if @exercises.empty? %><p>Create an exercise, then record it in a workout.</p><% end %>
+    <% @exercises.each do |exercise| %>
+      <article class="card card-body mb-3">
+        <h3 class="h5"><%= exercise.name %></h3><p><%= exercise.muscle_group %></p>
+        <p style="white-space: pre-wrap"><%= exercise.description %></p>
+        <div class="d-flex flex-wrap gap-2">
+          <%= link_to "History", workouts_path(exercise_id: exercise.id), class: "btn btn-outline-primary" %>
+          <%= link_to "Edit", edit_exercise_path(exercise), class: "btn btn-outline-secondary" %>
+          <details><summary class="btn btn-outline-danger">Delete exercise</summary><p>Exercises used in workouts must be removed from those workouts first.</p><%= button_to "Permanently delete exercise", exercise_path(exercise), method: :delete, class: "btn btn-danger" %></details>
+        </div>
+      </article>
+    <% end %>
+  </section>
+</div>

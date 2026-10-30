@@ -1,6 +1,21 @@
-# Nexus — Checkpoint 2
+# Nexus — Checkpoint 3
 
-Ruby on Rails 7.2 personal productivity workspace for CS408. Checkpoint 2 adds private notes with create/edit/delete forms, a plain-text editor, folders, categories, and title/content search to the PostgreSQL and Bootstrap foundation. Fitness, finances, goals, global workspace search, and uploads belong to later checkpoints.
+Ruby on Rails 7.2 personal productivity workspace for CS408. Checkpoint 3 adds private fitness tracking: exercises, workout create/edit/delete forms, sets/reps/weight, workout history, and exercise filtering. The Checkpoint 2 notes, organization, and search features remain available. Finances, goals, global workspace search, and uploads belong to later checkpoints.
+
+## Fitness tracking (Checkpoint 3)
+
+Choose **Fitness** in the header or **Track workouts** on the dashboard:
+
+- `/exercises`: create your personal exercise library with a name, muscle group, and description. Edit or delete unused exercises; exercises referenced by a workout are protected to preserve history.
+- `/workouts/new`: record a name, date, optional notes, and one or more exercises. Use **Add exercise** and **Add set** to extend the form without saving. Record positive whole-number reps and weight in **kilograms**, up to two decimal places; use 0 for bodyweight.
+- `/workouts`: browse workouts by date (20 per page), or select an exercise to see just its recorded sets across workouts.
+- `/workouts/:id`: view, edit, or permanently delete a workout. Check **Remove** beside a set or exercise in the editor, then save to remove it. Workouts need at least one exercise with a recorded set.
+
+All fitness routes require login. Workouts and exercises belong to the signed-in user; nested records are restricted to their parent workout, and another user's exercise cannot be assigned. Workout and set changes save together. Adding form rows preserves draft values; save explicitly before leaving the page.
+
+The additive migration creates `exercises`, `workouts`, `workout_exercises`, and `exercise_sets`. Run `bundle exec rails db:prepare` before restarting an existing installation; startup and deployment scripts already do this.
+
+**Updating your existing EC2 instance:** follow [Checkpoint 3 EC2 update commands](docs/checkpoint-3-ec2-update.md) for validation, database/source backup, Ubuntu/WSL deployment or Windows PowerShell upload, production migrations, restart, verification, and recovery. No new server setup is needed. See [Checkpoint 3 requirements and evidence](docs/checkpoint-3-deliverable.md).
 
 ## Start from a fresh clone
 
@@ -36,7 +51,7 @@ For an existing installation, install dependencies and run `bundle exec rails db
 
 The Checkpoint 2 tests cover note CRUD, invalid forms and retained drafts, owner-only access, forged assignments, HTML escaping, folder/category management, note preservation on group deletion, search/filter combinations, literal wildcards, and pagination.
 
-Verification on this Windows machine is limited: Windows Application Control blocks Ruby's `strscan.so`, preventing Rails boot, migrations, and the automated suite from executing. Ruby and Rails ERB syntax checks can run separately. Run the complete suite in the supported Ubuntu environment or GitHub Actions before deployment; do not treat the new tests as passed until that run succeeds.
+The Rails suite and migrations are validated using Ubuntu in WSL; native Windows Ruby encountered PostgreSQL extension loading problems. See the [Checkpoint 3 deliverable](docs/checkpoint-3-deliverable.md) for the current verification results. Browser testing and live EC2 verification should follow the deployment checklist.
 
 ## Manual setup and tests
 

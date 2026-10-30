@@ -7,6 +7,7 @@
       <% if current_user %>
         <%= link_to "Dashboard", dashboard_path, class: "nav-link" %>
         <%= link_to "Notes", notes_path, class: "nav-link" %>
+        <%= link_to "Fitness", workouts_path, class: "nav-link" %>
         <%= link_to "Search", search_path, class: "nav-link" %>
         <%= button_to "Log out", logout_path, method: :delete, class: "btn btn-outline-secondary" %>
       <% else %>

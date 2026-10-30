@@ -1,0 +1,21 @@
+<% content_for :title, "Workout history" %>
+<p class="eyebrow">Fitness</p>
+<div class="d-flex flex-wrap justify-content-between gap-3 mb-4"><h1>Workout history</h1><div class="d-flex gap-2 align-self-start"><%= link_to "Exercises", exercises_path, class: "btn btn-outline-primary" %><%= link_to "Record workout", new_workout_path, class: "btn btn-primary" %></div></div>
+<%= form_with url: workouts_path, method: :get, class: "card card-body mb-4" do |form| %>
+  <%= form.label :exercise_id, "Filter by exercise", class: "form-label" %>
+  <%= form.collection_select :exercise_id, @exercises, :id, :name, { include_blank: "All exercises", selected: @exercise&.id }, class: "form-select mb-3" %>
+  <div><%= form.submit "Filter history", class: "btn btn-primary" %> <%= link_to "Clear", workouts_path, class: "btn btn-outline-secondary" %></div>
+<% end %>
+<% if @exercise %><p>History for <strong><%= @exercise.name %></strong>. Only sets for this exercise are displayed.</p><% end %>
+<p><%= pluralize @total, "workout" %></p>
+<% if @workouts.empty? %><h2 class="h4">No workouts found</h2><p>Record a workout or choose a different exercise filter.</p><% end %>
+<% @workouts.each do |workout| %>
+  <article class="card card-body mb-4">
+    <h2 class="h4"><%= link_to workout.name, workout_path(workout) %></h2><p><%= workout.workout_date %></p>
+    <%= render "entries", entries: workout.workout_exercises.select { |entry| !@exercise || entry.exercise_id == @exercise.id } %>
+  </article>
+<% end %>
+<nav aria-label="Workout pages" class="d-flex gap-3">
+  <% if @page > 1 %><%= link_to "Previous", workouts_path(page: @page - 1, exercise_id: @exercise&.id) %><% end %>
+  <% if @page * 20 < @total %><%= link_to "Next", workouts_path(page: @page + 1, exercise_id: @exercise&.id) %><% end %>
+</nav>
